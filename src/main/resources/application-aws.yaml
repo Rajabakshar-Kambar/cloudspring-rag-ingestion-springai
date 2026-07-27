@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: cloudspring-rag-ingestion
+
+  cloud:
+    aws:
+      region:
+        static: ap-south-1
+
+  ai:
+    model:
+      embedding: bedrock-titan
+
+    bedrock:
+      aws:
+        region: ap-south-1
+      titan:
+        embedding:
+          model: amazon.titan-embed-text-v2:0
+          input-type: text
+
+    vectorstore:
+      qdrant:
+        host: 65.0.199.98
+        port: 6334
+        collection-name: company-documents
+        initialize-schema: true
+
+app:
+  chunking:
+    chunk-size: 1000
+    min-chunk-size-chars: 350
+    min-chunk-length-to-embed: 5
+    max-num-chunks: 5000
+    keep-separator: true
+    overlap-size: 200
+
+  sqs:
+    queue-name: document-ingestion-queue
+
+  ingestion:
+    supported-extensions:
+      - pdf
+    max-file-size-mb: 50
+    max-retries: 3
+
+logging:
+  level:
+    root: INFO
+    org.springframework.ai: DEBUG
+    io.awspring.cloud.sqs: DEBUG
+    software.amazon.awssdk: INFO
