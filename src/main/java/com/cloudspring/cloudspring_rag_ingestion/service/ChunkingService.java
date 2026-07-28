@@ -53,6 +53,15 @@ public class ChunkingService {
                             .text(rawChunk.getText())
                             .metadata(metadata)
                             .build());
+
+            if (log.isDebugEnabled()) {
+                for (Document chunk : chunks) {
+                    String preview = chunk.getText().length() > 80
+                            ? chunk.getText().substring(0, 80) + "..."
+                            : chunk.getText();
+                    log.debug("chunk[{}] len={} preview=\"{}\"", chunk.getMetadata().get("chunkIndex"), chunk.getText().length(), preview);
+                }
+            }
         }
 
         return chunks;

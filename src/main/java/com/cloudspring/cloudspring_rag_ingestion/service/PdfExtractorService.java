@@ -53,6 +53,7 @@ public class PdfExtractorService {
                 pages.stream()
                         .map(Document::getText)
                         .filter(text -> text != null && !text.isBlank())
+                        .map(this::normalizeWhitespace)
                         .collect(Collectors.joining("\n"));
 
         if (fullText.isBlank()) {
@@ -66,5 +67,23 @@ public class PdfExtractorService {
                 .text(fullText)
                 .metadata(Map.of("documentName", documentName))
                 .build();
+    }
+
+    /**
+     * Collapses the multi-space/tab runs that PDFBox's layout-aware text stripper
+     * inserts to reconstruct visual column/table alignment (e.g. TOC dot-leaders,
+     * justified text). Left uncollapsed, these runs pollute the token stream fed
+     * to the embedding model on every single chunk, diluting semantic signal and
+     * suppressing similarity scores even for near-verbatim query matches.
+     *
+     * <p>Only horizontal whitespace (spaces/tabs) is collapsed — newlines are
+     * preserved so paragraph/line structure remains available to the splitter.
+     */
+    private String normalizeWhitespace(String text) {
+        return text
+                .lines()
+                .map(line -> line.replaceAll("[ \\t]+", " ").trim())
+                .filter(line -> !line.isEmpty())
+                .collect(Collectors.joining("\n"));
     }
 }

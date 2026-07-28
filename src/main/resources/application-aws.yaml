@@ -21,15 +21,15 @@ spring:
 
     vectorstore:
       qdrant:
-        host: 65.0.199.98
+        host: 13.203.226.215
         port: 6334
         collection-name: company-documents
         initialize-schema: true
 
 app:
   chunking:
-    chunk-size: 1000
-    min-chunk-size-chars: 350
+    chunk-size: 200
+    min-chunk-size-chars: 200
     min-chunk-length-to-embed: 5
     max-num-chunks: 5000
     keep-separator: true
